@@ -49,6 +49,7 @@ Predictions: [NOAA station 8533071](https://tidesandcurrents.noaa.gov/noaatidepr
 # From the project root (needs ANDROID_HOME or local.properties sdk.dir)
 # If gradle-wrapper.jar is missing:
 ./scripts/fetch-wrapper-jar.sh
+chmod +x gradlew
 ./gradlew assembleDebug
 ```
 
@@ -97,15 +98,15 @@ USB debugging must be enabled on the device.
 
 ## Gradle wrapper JAR
 
-The repo includes `gradlew` / `gradlew.bat` and wrapper properties.
-If `gradle/wrapper/gradle-wrapper.jar` is missing:
+The repo includes `gradlew` / `gradlew.bat` and `gradle/wrapper/gradle-wrapper.properties`.
+Binary `gradle-wrapper.jar` is restored with:
 
 ```bash
 ./scripts/fetch-wrapper-jar.sh
-# decodes gradle/wrapper/gradle-wrapper.jar.b64 or downloads from Gradle GitHub
+# downloads from https://github.com/gradle/gradle (tag v8.11.1)
 ```
 
-Android Studio will also generate the wrapper JAR on first sync if needed.
+Android Studio will also generate/sync the wrapper JAR on first open if needed.
 
 ## Project structure
 
