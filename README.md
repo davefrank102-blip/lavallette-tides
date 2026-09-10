@@ -47,6 +47,8 @@ Predictions: [NOAA station 8533071](https://tidesandcurrents.noaa.gov/noaatidepr
 
 ```bash
 # From the project root (needs ANDROID_HOME or local.properties sdk.dir)
+# If gradle-wrapper.jar is missing:
+./scripts/fetch-wrapper-jar.sh
 ./gradlew assembleDebug
 ```
 
@@ -92,6 +94,18 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 USB debugging must be enabled on the device.
 
 > Note: the debug build uses application id `com.lavallette.tides.debug`.
+
+## Gradle wrapper JAR
+
+The repo includes `gradlew` / `gradlew.bat` and wrapper properties.
+If `gradle/wrapper/gradle-wrapper.jar` is missing:
+
+```bash
+./scripts/fetch-wrapper-jar.sh
+# decodes gradle/wrapper/gradle-wrapper.jar.b64 or downloads from Gradle GitHub
+```
+
+Android Studio will also generate the wrapper JAR on first sync if needed.
 
 ## Project structure
 
