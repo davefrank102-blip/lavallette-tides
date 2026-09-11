@@ -1,0 +1,132 @@
+:root {
+  --bg0: #042436;
+  --bg1: #0a4a63;
+  --card: rgba(13, 63, 87, 0.82);
+  --card2: rgba(8, 53, 80, 0.72);
+  --text: #f4fbff;
+  --muted: #9bb8c7;
+  --foam: #b8e6f5;
+  --sea: #4ecdc4;
+  --sand: #e8c47c;
+  --coral: #ff8a7a;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg0); color: var(--text); }
+body { -webkit-tap-highlight-color: transparent; }
+
+.bg {
+  position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(165deg, #031c2c 0%, #0a4a63 45%, #12607a 100%);
+}
+
+.wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(16px + var(--safe-top)) 16px calc(28px + var(--safe-bottom));
+}
+
+.top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.eyebrow { margin: 0; color: var(--foam); font-size: 14px; font-weight: 600; letter-spacing: 0.02em; }
+h1 { margin: 2px 0 0; font-size: 28px; line-height: 1.15; font-weight: 750; }
+h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+
+.icon-btn {
+  width: 42px; height: 42px; border: 0; border-radius: 12px;
+  background: rgba(255,255,255,0.08); color: var(--foam);
+  font-size: 22px; cursor: pointer;
+}
+.icon-btn:active { transform: scale(0.96); }
+.icon-btn.spin { animation: spin 0.8s linear infinite; }
+
+.card {
+  background: linear-gradient(160deg, var(--card), var(--card2));
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.muted { color: var(--muted); }
+.small { font-size: 12px; margin: 0 0 8px; }
+.label { margin: 0; font-size: 22px; font-weight: 750; }
+.section-label { margin: 14px 0 8px; color: var(--sand); font-size: 13px; font-weight: 650; }
+
+.status-row { display: flex; flex-direction: column; gap: 14px; }
+.chip-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.chip {
+  background: rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.chip strong { font-size: 18px; }
+.chip-label { font-size: 12px; font-weight: 650; }
+.chip-label.high { color: var(--sea); }
+.chip-label.low { color: var(--sand); }
+
+#tideChart { width: 100%; height: auto; display: block; margin-top: 4px; }
+
+.wx-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.wx-main { margin: 2px 0 4px; font-size: 20px; font-weight: 750; }
+.wx-emoji { font-size: 42px; line-height: 1; }
+
+.hours { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.hour {
+  background: rgba(30, 140, 170, 0.25);
+  border-radius: 12px;
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 12px;
+}
+.hour .t { color: var(--muted); font-size: 11px; }
+.hour .e { font-size: 16px; margin: 4px 0; }
+.hour .deg { font-weight: 650; font-size: 13px; }
+.hour .w { color: var(--muted); font-size: 10px; }
+
+.day-block { margin-top: 10px; }
+.day-title { color: var(--sand); font-size: 13px; font-weight: 650; margin: 0 0 6px; }
+.tide-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; font-size: 14px;
+}
+.dot { width: 8px; height: 8px; border-radius: 4px; flex: 0 0 auto; }
+.dot.high { background: var(--sea); }
+.dot.low { background: var(--coral); }
+.tide-kind { width: 40px; }
+.tide-time { flex: 1; }
+.tide-ht { color: var(--muted); }
+
+.footer { margin: 8px 4px 0; }
+
+.overlay {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; background: rgba(3, 28, 44, 0.92); z-index: 20; padding: 24px; text-align: center;
+}
+.overlay[hidden] { display: none !important; }
+.spinner {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: var(--sea);
+  animation: spin 0.8s linear infinite;
+}
+.error h2 { margin: 0; }
+#error button, #retryBtn {
+  margin-top: 8px; border: 0; border-radius: 12px; padding: 12px 18px;
+  background: var(--sand); color: #1a1408; font-weight: 700; font-size: 15px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (min-width: 520px) {
+  .wrap { padding-top: 28px; }
+}
