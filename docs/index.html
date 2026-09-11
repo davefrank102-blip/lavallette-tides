@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#042436" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lavallette Tides" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-192.png" />
+  <title>Lavallette Tides</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg"></div>
+  <main class="wrap">
+    <header class="top">
+      <div>
+        <p class="eyebrow">Lavallette</p>
+        <h1>Tides &amp; Beach Day</h1>
+      </div>
+      <button id="refreshBtn" class="icon-btn" aria-label="Refresh" type="button">↻</button>
+    </header>
+
+    <section id="status" class="card status-card" hidden>
+      <div class="status-row">
+        <div>
+          <p class="label" id="dirLabel">—</p>
+          <p class="muted" id="nowHeight">—</p>
+        </div>
+        <div class="chip-row">
+          <div class="chip">
+            <span class="chip-label high">Next High</span>
+            <strong id="nextHighTime">—</strong>
+            <span class="muted" id="nextHighHt">—</span>
+          </div>
+          <div class="chip">
+            <span class="chip-label low">Next Low</span>
+            <strong id="nextLowTime">—</strong>
+            <span class="muted" id="nextLowHt">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="curveCard" class="card" hidden>
+      <h2>Today’s tide curve</h2>
+      <p class="muted small" id="stationLine">Seaside Heights, ocean</p>
+      <canvas id="tideChart" width="600" height="220" aria-label="Tide curve"></canvas>
+    </section>
+
+    <section id="weatherCard" class="card" hidden>
+      <div class="wx-top">
+        <div>
+          <p class="muted small">Beach weather</p>
+          <p class="wx-main" id="wxMain">—</p>
+          <p class="muted" id="wxWind">—</p>
+        </div>
+        <div class="wx-emoji" id="wxEmoji">☀️</div>
+      </div>
+      <p class="section-label">Next hours</p>
+      <div class="hours" id="hours"></div>
+    </section>
+
+    <section id="weekCard" class="card" hidden>
+      <h2>This week</h2>
+      <p class="muted small">Highs &amp; lows · ocean station</p>
+      <div id="weekList"></div>
+    </section>
+
+    <p class="footer muted small" id="updated">Loading…</p>
+  </main>
+
+  <div id="overlay" class="overlay">
+    <div class="spinner"></div>
+    <p>Fetching Lavallette tides…</p>
+  </div>
+
+  <div id="error" class="overlay error" hidden>
+    <h2>Couldn’t load data</h2>
+    <p id="errorMsg" class="muted"></p>
+    <button id="retryBtn" type="button">Try again</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
