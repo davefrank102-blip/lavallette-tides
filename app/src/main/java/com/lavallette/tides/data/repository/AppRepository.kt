@@ -61,6 +61,10 @@ class AppRepository(context: Context) {
         val beginStr = begin.format(dateFmt)
         val endStr = end.format(dateFmt)
 
+        // Seaside Heights (8533071) is a subordinate station: NOAA only returns
+        // high/low predictions here (interval=hilo). Continuous/hourly products
+        // fail with a misleading "Datum input is valid" error — so we synthesize
+        // today's curve by cosine-interpolating between consecutive extremes.
         val extremesResp = ApiClients.noaa.predictions(
             station = StationInfo.ID,
             beginDate = beginStr,
@@ -69,16 +73,12 @@ class AppRepository(context: Context) {
         )
         extremesResp.error?.message?.let { throw IllegalStateException(it) }
 
-        val curveResp = ApiClients.noaa.predictions(
-            station = StationInfo.ID,
-            beginDate = today.format(dateFmt),
-            endDate = today.format(dateFmt),
-            interval = "h"
-        )
-        curveResp.error?.message?.let { throw IllegalStateException(it) }
-
         val extremes = (extremesResp.predictions ?: emptyList()).mapNotNull { it.toEvent() }
-        val curve = (curveResp.predictions ?: emptyList()).mapNotNull { it.toSample() }
+            .sortedBy { it.timeMillis }
+        if (extremes.isEmpty()) {
+            throw IllegalStateException("No tide predictions returned for ${StationInfo.NAME}")
+        }
+        val curve = synthesizeCurveFromExtremes(extremes, today)
 
         val nextHigh = extremes.firstOrNull { it.type == TideType.HIGH && it.timeMillis >= nowMillis }
         val nextLow = extremes.firstOrNull { it.type == TideType.LOW && it.timeMillis >= nowMillis }
@@ -178,6 +178,47 @@ class AppRepository(context: Context) {
         LocalDateTime.parse(value, openMeteoFmt).atZone(zone).toInstant().toEpochMilli()
     } catch (_: Exception) {
         null
+    }
+
+
+    /**
+     * Build a smooth day curve from high/low extremes (cosine between neighbors).
+     * Used when the NOAA station does not publish continuous predictions.
+     */
+    private fun synthesizeCurveFromExtremes(
+        extremes: List<TideEvent>,
+        day: LocalDate
+    ): List<TideSample> {
+        if (extremes.size < 2) {
+            return extremes.map { TideSample(it.timeMillis, it.heightFt) }
+        }
+        val dayStart = day.atStartOfDay(zone).toInstant().toEpochMilli()
+        val dayEnd = day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+        val stepMs = 15L * 60L * 1000L
+        val samples = ArrayList<TideSample>()
+        var t = dayStart
+        while (t < dayEnd) {
+            val height = cosineHeightAt(extremes, t) ?: break
+            samples += TideSample(t, height)
+            t += stepMs
+        }
+        return samples
+    }
+
+    private fun cosineHeightAt(extremes: List<TideEvent>, t: Long): Double? {
+        val before = extremes.lastOrNull { it.timeMillis <= t }
+        val after = extremes.firstOrNull { it.timeMillis >= t }
+        return when {
+            before == null -> after?.heightFt
+            after == null -> before.heightFt
+            before.timeMillis == after.timeMillis -> before.heightFt
+            else -> {
+                val ratio = (t - before.timeMillis).toDouble() /
+                    (after.timeMillis - before.timeMillis).toDouble()
+                val smooth = (1.0 - kotlin.math.cos(Math.PI * ratio)) / 2.0
+                before.heightFt + (after.heightFt - before.heightFt) * smooth
+            }
+        }
     }
 
     private fun interpolateHeight(curve: List<TideSample>, now: Long): Double? {
