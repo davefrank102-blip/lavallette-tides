@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,8 +57,11 @@ private val dayFmt = DateTimeFormatter.ofPattern("EEE M/d").withZone(zone)
 private val hourFmt = DateTimeFormatter.ofPattern("ha").withZone(zone)
 
 @Composable
-fun GlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(
+fun GlassCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
@@ -66,8 +70,11 @@ fun GlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
                     listOf(CardGlass, Color(0xB0083550))
                 )
             )
-            .padding(16.dp)
-    ) { content() }
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top
+    ) {
+        content()
+    }
 }
 
 @Composable
@@ -92,8 +99,8 @@ fun TideStatusCard(tides: TideSnapshot) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text("Tide is $dirLabel", color = TextPrimary, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                val height = tides.currentHeightFt?.let { String.format("%.1f ft MLLW", it) } ?: "-"
-                Text("Approx. now - $height", color = TextMuted, fontSize = 14.sp)
+                val height = tides.currentHeightFt?.let { String.format("%.1f ft MLLW", it) } ?: "—"
+                Text("Approx. now · $height", color = TextMuted, fontSize = 14.sp)
             }
             Icon(Icons.Default.WaterDrop, null, tint = Foam, modifier = Modifier.size(28.dp))
         }
@@ -131,7 +138,7 @@ private fun NextTideChip(
         Text(label, color = color, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(4.dp))
         if (event == null) {
-            Text("-", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("—", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         } else {
             Text(timeFmt.format(Instant.ofEpochMilli(event.timeMillis)), color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Text(String.format("%.1f ft", event.heightFt), color = TextMuted, fontSize = 13.sp)
@@ -149,7 +156,7 @@ fun WeatherCard(weather: WeatherSnapshot) {
             Column(Modifier.weight(1f)) {
                 Text("Beach weather", color = TextMuted, fontSize = 13.sp)
                 Text(
-                    "${c.tempF.roundToInt()}F - ${c.conditionLabel}",
+                    "${c.tempF.roundToInt()}°F · ${c.conditionLabel}",
                     color = TextPrimary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -198,8 +205,8 @@ private fun HourChip(hour: WeatherHour, modifier: Modifier = Modifier) {
             fontSize = 11.sp
         )
         Text(WeatherCodes.emoji(hour.weatherCode), fontSize = 16.sp)
-        Text("${hour.tempF.roundToInt()}F", color = TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-        Text("${hour.windMph.roundToInt()}m", color = TextMuted, fontSize = 10.sp)
+        Text("${hour.tempF.roundToInt()}°", color = TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+        Text("${hour.windMph.roundToInt()} mph", color = TextMuted, fontSize = 10.sp)
     }
 }
 
@@ -207,7 +214,7 @@ private fun HourChip(hour: WeatherHour, modifier: Modifier = Modifier) {
 fun WeeklyTideList(events: List<TideEvent>) {
     GlassCard {
         Text("This week", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text("Highs & lows - ocean station", color = TextMuted, fontSize = 13.sp)
+        Text("Highs & lows · ocean station", color = TextMuted, fontSize = 13.sp)
         Spacer(Modifier.height(12.dp))
         val byDay = events.groupBy { dayFmt.format(Instant.ofEpochMilli(it.timeMillis)) }
         byDay.forEach { (day, dayEvents) ->
@@ -247,7 +254,7 @@ fun WeeklyTideList(events: List<TideEvent>) {
                     )
                 }
             }
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(8.dp))
         }
     }
 }
