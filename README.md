@@ -3,7 +3,7 @@
 Sideloadable Android app for **local ocean tides** and **beach-day weather** in **Lavallette, NJ**.
 
 - Kotlin + Jetpack Compose
-- Ocean/beach-inspired UI with today's tide curve and a weekly highs/lows list
+- Ocean/beach-inspired UI with today’s tide curve and a weekly highs/lows list
 - Offline-friendly: last successful fetch is cached on device
 - No accounts, no hosted backend, no end-user API keys
 
@@ -12,13 +12,13 @@ Sideloadable Android app for **local ocean tides** and **beach-day weather** in 
 1. **Tides**
    - Current state (rising / falling)
    - Next high & next low (time + height, feet MLLW)
-   - Today's tide curve (Compose Canvas chart)
+   - Today’s tide curve (Compose Canvas chart)
    - Weekly view (~7 days of highs/lows)
-2. **Weather** (Lavallette ~ 40.039, -74.050)
+2. **Weather** (Lavallette ≈ 40.039, −74.050)
    - Current temperature, conditions, wind
    - Short hourly outlook useful for beach days
 3. **UX**
-   - Polished ocean palette, glass-style cards, refresh button
+   - Polished ocean palette, glass-style cards, pull-style refresh button
    - Cached last response for offline resilience
 
 ## Tide station
@@ -32,11 +32,13 @@ Sideloadable Android app for **local ocean tides** and **beach-day weather** in 
 
 Predictions: [NOAA station 8533071](https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=8533071)
 
+**Note:** This subordinate station publishes high/low predictions only. The app builds today’s tide curve by interpolating between those extremes (NOAA continuous/hourly products are not available for this station).
+
 ## Weather data
 
 - **Open-Meteo** forecast API (no API key)
-- Hardcoded coordinates: **40.039, -74.050** (Lavallette, NJ)
-- Units: F, mph, America/New_York
+- Hardcoded coordinates: **40.039, −74.050** (Lavallette, NJ)
+- Units: °F, mph, America/New_York
 
 ## Requirements
 
@@ -47,9 +49,6 @@ Predictions: [NOAA station 8533071](https://tidesandcurrents.noaa.gov/noaatidepr
 
 ```bash
 # From the project root (needs ANDROID_HOME or local.properties sdk.dir)
-# If gradle-wrapper.jar is missing:
-./scripts/fetch-wrapper-jar.sh
-chmod +x gradlew
 ./gradlew assembleDebug
 ```
 
@@ -75,7 +74,7 @@ On macOS Android Studio default SDK is often:
 
 1. Open the project folder in Android Studio
 2. Let Gradle sync finish
-3. **Build -> Build Bundle(s) / APK(s) -> Build APK(s)**
+3. **Build → Build Bundle(s) / APK(s) → Build APK(s)**
 4. Or run on a device/emulator with the green Run button
 
 ## Sideload / install
@@ -83,7 +82,7 @@ On macOS Android Studio default SDK is often:
 ### On the phone (file install)
 
 1. Copy `app-debug.apk` to the phone
-2. Enable install from unknown sources / Allow from this source for your file manager
+2. Enable install from unknown sources / “Allow from this source” for your file manager
 3. Open the APK and install **Lavallette Tides**
 
 ### With adb
@@ -95,18 +94,6 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 USB debugging must be enabled on the device.
 
 > Note: the debug build uses application id `com.lavallette.tides.debug`.
-
-## Gradle wrapper JAR
-
-The repo includes `gradlew` / `gradlew.bat` and `gradle/wrapper/gradle-wrapper.properties`.
-Binary `gradle-wrapper.jar` is restored with:
-
-```bash
-./scripts/fetch-wrapper-jar.sh
-# downloads from https://github.com/gradle/gradle (tag v8.11.1)
-```
-
-Android Studio will also generate/sync the wrapper JAR on first open if needed.
 
 ## Project structure
 
@@ -120,10 +107,10 @@ app/src/main/java/com/lavallette/tides/
 
 ## Tech stack
 
-- AGP 8.7.x / Kotlin 2.0 / Compose BOM 2024.10
+- AGP 8.7.x · Kotlin 2.0 · Compose BOM 2024.10
 - Retrofit + OkHttp + Kotlin Serialization
 - DataStore Preferences (cache)
-- Min SDK 26 / Target/Compile SDK 35
+- Min SDK 26 · Target/Compile SDK 35
 
 ## Privacy
 
@@ -133,4 +120,18 @@ app/src/main/java/com/lavallette/tides/
 
 ## License
 
-Personal / sideload project for Lavallette tide & weather convenience. Tide predictions (c) NOAA/NOS/CO-OPS; weather (c) Open-Meteo.
+Personal / sideload project for Lavallette tide & weather convenience. Tide predictions © NOAA/NOS/CO-OPS; weather © Open-Meteo.
+
+
+## Gradle wrapper JAR
+
+The repo includes `gradlew` / `gradlew.bat` and `gradle/wrapper/gradle-wrapper.properties`.
+If `gradle/wrapper/gradle-wrapper.jar` is missing after clone:
+
+```bash
+./scripts/fetch-wrapper-jar.sh
+# or
+gradle wrapper --gradle-version 8.11.1
+```
+
+Android Studio will also generate the wrapper JAR on first sync if needed.
